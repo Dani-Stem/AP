@@ -1,0 +1,30 @@
+from time import sleep
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from creds import applecreds
+
+# create webdriver object
+driver = webdriver.Chrome()
+
+driver.get("https://music.apple.com/login")
+
+# get current_window_handle
+print(driver.current_window_handle)
+
+sleep(0.5)
+driver.switch_to.frame(1)
+sleep(5)
+
+    # //*[@id="account_name_text_field"]
+    # #account_name_text_field
+    # /html/body/div[3]/apple-auth/div/div[1]/div/sign-in/div/div[1]/div[1]/div/div/div[1]/div/div/input
+
+
+driver.find_element(By.ID, "//*[@id='account_name_text_field']/input[0]").click()
+#driver.find_element(By.ID, "account_name_text_field").send_keys(applecreds.usr)
+#driver.find_element(By.ID, "account_name_text_field").send_keys(Keys.ENTER)
+sleep(0.5)
+#driver.find_element(By.ID, applecreds.usr).send_keys(applecreds.psk)
+#driver.find_element(By.ID, applecreds.psk).send_keys(Keys.ENTER)
