@@ -1,30 +1,41 @@
 from time import sleep
+
+import self as self
+from applemusic import AppleMusic
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from creds import applecreds
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
-# create webdriver object
-driver = webdriver.Chrome()
 
-driver.get("https://music.apple.com/login")
+chrome_options = Options()
+chrome_options.add_argument("user-data-dir=/home/dani/Desktop/apMirror")
+driver = webdriver.Chrome(options=chrome_options)
+driver.get("https://music.apple.com/%22")
+sleep(9)
 
-# get current_window_handle
-print(driver.current_window_handle)
 
-sleep(0.5)
-driver.switch_to.frame(1)
+
+# def find_all_iframes(driver):
+#     iframes = driver.find_elements_by_xpath("//iframe")
+#     for index, iframe in enumerate(iframes):
+#         driver.switch_to.frame(index)
+# 
+#         try:
+#             driver.find_element(By.ID, "account_name_text_field").send_keys(applecreds.usr)
+#             driver.find_element(By.ID, "account_name_text_field").send_keys(Keys.ENTER)
+#             sleep(0.5)
+#             driver.find_element(By.ID, "password_text_field").send_keys(applecreds.psk)
+#             driver.find_element(By.ID, "password_text_field").send_keys(Keys.ENTER)
+#         except NoSuchElementException:
+#             find_all_iframes(driver)
+#             return
+# 
+# find_all_iframes(driver)
+
 sleep(5)
 
-    # //*[@id="account_name_text_field"]
-    # #account_name_text_field
-    # /html/body/div[3]/apple-auth/div/div[1]/div/sign-in/div/div[1]/div[1]/div/div/div[1]/div/div/input
-
-
-driver.find_element(By.ID, "//*[@id='account_name_text_field']/input[0]").click()
-#driver.find_element(By.ID, "account_name_text_field").send_keys(applecreds.usr)
-#driver.find_element(By.ID, "account_name_text_field").send_keys(Keys.ENTER)
-sleep(0.5)
-#driver.find_element(By.ID, applecreds.usr).send_keys(applecreds.psk)
-#driver.find_element(By.ID, applecreds.psk).send_keys(Keys.ENTER)
+driver.AM.playSong('ap pop smoke')
