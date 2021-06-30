@@ -84,14 +84,6 @@ while True:
     fingers = detector.fingersUp()
 
     cv2.rectangle(img, (frameR, frameR), (wCam - frameR, hCam - frameR),(255, 0, 255), 2)
-    # #Index/second Finger Moving cursor
-    # if (fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 0):
-    #     # 5. Convert Coordinates
-    #     x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
-    #     y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
-    #     # 6. Smoothen Values
-    #     clocX = plocX + (x3 - plocX) / smoothening
-    #     clocY = plocY + (y3 - plocY) / smoothening
 
     if (fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 0):
         resumeOrPause()
@@ -101,32 +93,6 @@ while True:
         nextSong()
         print("yeeNext")
 
-        # #Move Mouse
-        # autopy.mouse.move(wScr - clocX, clocY)
-        # cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
-        # plocX, plocY = clocX, clocY
-
-    # #clicking w/ index finger & releasing the click w/ first 2 fingers
-    # if fingers[1] == 1 and fingers[2] == 0 and fingers[3] == 0 and fingers[4] == 0:
-    #     pyautogui.mouseDown(button='left')
-    #     pyautogui.mouseUp(button='left')
-    #
-    # # ScrollING
-    # if fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 1 and fingers[4] == 1:
-    #     time0 = time.time()x_pos = detector.lmList[1][2]
-    #     delta = prev_x_pos - x_pos
-    #     if y0 > y1:
-    #         pyautogui.scroll(75)
-    #         print('up')
-    #     if y0 < y1:
-    #         pyautogui.scroll(-75)
-    #         print('down')
-    #
-    #     print(time0)
-    #     print(y0)
-    #     print(y1)
-    #
-    #     y1 = detector.lmList[1][2]
     #Frame Rate
     cTime = time.time()
     fps = 1 / (cTime - pTime)
