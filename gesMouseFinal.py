@@ -1,0 +1,143 @@
+#*** REMEMBER THAT WE HAD TO IMPORT "msvc-runtime" INTO ENV, BUT NO NEED TO IMPORT HERE
+import cv2
+import handTrackMod as htm
+import time
+import pyautogui
+from pynput.keyboard import Key, Controller
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
+
+chrome_options = Options()
+chrome_options.add_argument('--profile-directory=Default')
+chrome_options.add_argument('--user-data-dir=/home/pi/Desktop/ChromeProfile')
+driver = webdriver.Chrome(options=chrome_options)
+
+
+driver.get("https://music.apple.com/library/playlist/p.b16GB61SK4GKNa")
+
+def playSong(userInput):
+    driver.find_element(By.CSS_SELECTOR, ".dt-search-box__input").click()
+    driver.find_element(By.CSS_SELECTOR, ".dt-search-box__input").send_keys(userInput)
+    time.sleep(0.5)
+    driver.find_element(By.CSS_SELECTOR, ".dt-search-box__input").send_keys(Keys.ENTER)
+    time.sleep(5)
+    driver.find_element_by_xpath("//*[@class='shelf-grid__list']/li/div/div/div/div/div/button").click()
+    song = driver.find_element_by_xpath("//*[@class='shelf-grid__list']/li/div/div/div/ul/li/span/span").text
+    artist = driver.find_element_by_xpath("//*[@class='shelf-grid__list']/li/div/div/div/ul/li[2]/a").text
+    return "Playing {0} by {1}".format(song, artist)
+
+time.sleep(5)
+
+#click on page, in song box
+driver.find_element_by_xpath("//*[@id='web-main']/div[4]/div/div[1]/div/div[2]/div[3]/div[5]").click()
+#click play button
+driver.find_element_by_xpath("//*[@id='web-main']/div[4]/div/div[1]/div/div[1]/div[3]/div/div[3]/button[1]").click()
+
+#playSong("AP by Pop smoke")
+
+def resumeOrPause():
+    driver.find_element_by_xpath(
+        "//*[@class='web-chrome-playback-controls__directionals']/div[2]/button[2]").click()
+
+def nextSong():
+        driver.find_element_by_xpath(
+            "//*[@class='web-chrome-playback-controls__directionals']/div[2]/button[3]").click()
+
+def shuffle():
+        driver.find_element_by_xpath("//*[@class='button-content']/button[2]").click()
+
+
+def restart():
+        driver.find_element_by_xpath("//*[@class='web-chrome-playback-controls__directionals']/div[2]/button[1]").click()
+
+def minWin():
+        driver.minimize_window()
+
+time.sleep(2)
+
+##########################
+wCam, hCam = 426, 240
+frameR = 20  # Frame Reduction
+smoothening = 7
+#########################
+
+pTime = 0
+plocX, plocY = 0, 0
+clocX, clocY = 0, 0
+
+cap = cv2.VideoCapture(0)
+cap.set(3, wCam)
+cap.set(4, hCam)
+detector = htm.handDetector(maxHands=1)
+wScr, hScr = pyautogui.size()
+click_switch = True
+keyboard = Controller()
+
+
+time0 = 0
+delta = 0
+
+timeSince = 0
+
+while True:
+    #Find hand Landmarks
+    success, img = cap.read()
+    if not success: continue
+    img = detector.findHands(img)
+    lmList, bbox = detector.findPosition(img)
+    #Get the tip of the index and middle fingers
+    if len(lmList) != 0:
+        x1, y1 = lmList[8][1:]
+        x2, y2 = lmList[12][1:]
+        # print(x1, y1, x2, y2)
+
+    #Check which fingers are up
+    fingers = detector.fingersUp()
+
+    cv2.rectangle(img, (frameR, frameR), (wCam - frameR, hCam - frameR),(255, 0, 255), 2)
+
+    if (fingers[1] == 1 and fingers[2] == 0 and fingers[3] == 0):
+        diff = time.time()-timeSince
+        if (diff>0.5):
+            shuffle()
+            print("yeeShuf")
+            timeSince = time.time()
+
+    if (fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 0):
+        diff = time.time()-timeSince
+        if (diff>0.5):
+            resumeOrPause()
+            print("yeePP")
+            timeSince = time.time()
+
+    if (fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 1 and fingers[4] ==0):
+        diff = time.time()-timeSince
+        if (diff>0.5):
+            nextSong()
+            print("yeeNext")
+            timeSince = time.time()
+
+
+#    if (fingers[1] == 0 and fingers[2] == 0 and fingers[3] == 0 and fingers[4] == 0):
+#        diff = time.time()-timeSince
+#        if (diff>0.5):
+#            minWin()
+#            print("MinWin")
+#            timeSince = time.time()
+
+    #Frame Rate
+    cTime = time.time()
+    fps = 1 / (cTime - pTime)
+    pTime = cTime
+    cv2.putText(img, str(int(fps)), (20, 50), cv2.FONT_HERSHEY_PLAIN, 3,
+                (255, 0, 0), 3)
+    #Display
+    cv2.imshow("Image", img)
+    cv2.moveWindow("Image", 100, 400)
+    # cv2.setWindowProperty("Image", cv2.WND_PROP_TOPMOST, 1)
+    cv2.waitKey(1)
+
+
